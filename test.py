@@ -1,11 +1,12 @@
+#!/usr/bin/env python3
 ## INFO ########################################################################
 ##                                                                            ##
 ##                                  pickolo                                   ##
 ##                                  =======                                   ##
 ##                                                                            ##
 ##                    Effect Images Based On Color Picking                    ##
-##                       Version: 0.1.70.997 (20150104)                       ##
-##                                 File: TODO                                 ##
+##                       Version: 0.1.70.955 (20150104)                       ##
+##                               File: test.py                                ##
 ##                                                                            ##
 ##               For more information about the project, visit                ##
 ##                  <https://github.com/petervaro/pickolo>.                   ##
@@ -27,47 +28,36 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-#----------------------------- 3 POSTS IN 1 FILES -----------------------------#
-TODO:
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 1
-  - file: pickolo/app.py
-    line: 163
-    note: |
-          Decide if throw error during the creation of an instance is a
-          better idea or not. If it is better, that will allow the user to
-          pass a function object too, which will return an instance...
-          That's probably a way better approach... Although in that case
-          the App has to check on each exception, wether self._isclass is
-          True or not, which is not so ideal.
+from pickolo.app import App
+from pickolo.stripes import Stripes
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
-  - file: pickolo/app.py
-    line: 182
-    note: |
-          Decide if we need to check if image.mode == 'RGB' or not
+#------------------------------------------------------------------------------#
+def stupid_inputs():
+    a = App()
+    p = Stripes()
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
-  - file: pickolo/app.py
-    line: 233
-    note: |
-          Consider if checking if plugin has already been loaded
-          is a good idea or not. If checking will be 'lazy' and
-          will happen only during execution, it gives the freedom
-          of mixing the order of the load function callings to the
-          user => which is probably a better API design?
+    inputs = ((2, 1, 1, 2, 3, 1),
+              4,
+              (22.7, 78.12, 7),
+              (7, None, False),
+              (),
+              ('1', '2'),
+              ('1', None),
+              '1, 4',
+              '    12,,, 4, 5 6',
+              '',
+              '5',
+              '7,',
+              'hello',
+              ('1', (23, 1), (9, (8, (7, ('hello')))), '0'),)
+
+    print('DIM  :: DIV')
+    for input in inputs:
+        p.divide = input
+        print('{:4d} => {}'.format(p._dimension, p._divide))
 
 
 
-#----------------------------- 1 POSTS IN 1 FILES -----------------------------#
-QUESTION:
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 1
-  - file: pickolo/app.py
-    line: 91
-    note: |
-          what will reference the output of a plugin ???
-
-
+#------------------------------------------------------------------------------#
+if __name__ == '__main__':
+    stupid_inputs()

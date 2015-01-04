@@ -4,7 +4,7 @@
 ##                                  =======                                   ##
 ##                                                                            ##
 ##                    Effect Images Based On Color Picking                    ##
-##                       Version: 0.1.70.913 (20141218)                       ##
+##                       Version: 0.1.70.966 (20150104)                       ##
 ##                          File: pickolo/stripes.py                          ##
 ##                                                                            ##
 ##               For more information about the project, visit                ##
@@ -39,6 +39,25 @@ STRIPES = 'stripes'
 # Module level private constants
 _DEFAULT_DIVIDE = (1,)
 
+#------------------------------------------------------------------------------#
+def _store_int(container, values):
+    # If values is iterable
+    try:
+        for value in values:
+            # Prevent infinite recursion
+            if value == values:
+                raise TypeError
+            _store_int(container, value)
+    # If values is a single value
+    except TypeError:
+        try:
+            container.append(int(values) or 1)
+        except (TypeError, ValueError):
+            container.append(1)
+    # Return container
+    return container
+
+
 
 #------------------------------------------------------------------------------#
 class Stripes(PlugIn):
@@ -58,36 +77,16 @@ class Stripes(PlugIn):
         # If numbers is empty or None
         if not numbers:
             numbers = _DEFAULT_DIVIDE
-        # If numbers is not empty
-        else:
-            # If a single token is passed
-            try:
-                numbers = (int(numbers),)
-            # If multiple numbers have been passed
-            except ValueError:
-                print('ValueError: {!r}'.format(numbers))
-                # If numbers is a string
-                if isinstance(numbers, str):
-                    numbers = (n.strip() for n in numbers.split(',') if n)
-            except TypeError:
-                print('TypeError {!r}'.format(numbers))
+        # If numbers is a string
+        elif isinstance(numbers, str):
+            numbers = tuple(number.strip() for number in numbers.split(',') if number)
 
-        # If all values are tokens which can be converted to int
-        try:
-            numbers = tuple(map(int, numbers))
-        # If there are values which cannot be converted to int
-        except (TypeError, ValueError):
-            numbers = _DEFAULT_DIVIDE
+        # Convert all values to ints and store them
+        numbers = _store_int([], numbers)
 
-        # If numbers is an iterable of integers
-        try:
-            self._dimension = sum(numbers)
-        # If numbers is a single integer
-        except TypeError:
-            self._dimension = numbers = int(numbers)
-        # Store numbers
+        # Store meaningful values
+        self._dimension = sum(numbers)
         self._divide = numbers
-        print('{:4d} => {}'.format(self._dimension, self._divide))
 
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -105,3 +104,35 @@ class Stripes(PlugIn):
         # If horizontal stripes, or invalid
         else:
             pass
+
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    def execute(self, image):
+        # Resize image, and get new dimension
+        image.thumbnail((self._dimension,)*2)
+        width, height = image.size
+        pixels = image.load()
+
+        #row, column = (width, height) if HORIZONTAL else (height, width)
+
+        colors = []
+        for i in range(height):
+            row_r = []
+            row_g = []
+            row_b = []
+            for j in range(width):
+                r, g, b = pixels[j, i]
+                row_r.append(r)
+                row_g.append(g)
+                row_b.append(b)
+
+            colors.append((round(sum(row_r)/width),
+                           round(sum(row_g)/width),
+                           round(sum(row_b)/width)))
+
+        for i, color in zip(range(height), colors):
+            for j in range(width):
+                image.putpixel((j, i), color)
+
+        # image.show()
+
+

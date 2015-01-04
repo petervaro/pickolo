@@ -4,7 +4,7 @@
 ##                                  =======                                   ##
 ##                                                                            ##
 ##                    Effect Images Based On Color Picking                    ##
-##                       Version: 0.1.70.913 (20141218)                       ##
+##                       Version: 0.1.70.965 (20150104)                       ##
 ##                          File: pickolo/plugin.py                           ##
 ##                                                                            ##
 ##               For more information about the project, visit                ##
@@ -28,6 +28,16 @@
 ######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
-class PlugIn:
-
+class PickoloPlugIn:
+    """ Abstract Base Class """
     pass
+
+
+
+#------------------------------------------------------------------------------#
+class PlugIn(PickoloPlugIn):
+    """ Base Class """
+
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    def execute(self, *args, **kwargs):
+        print("{} has no 'execute' method".format(self.__class__))
